@@ -1,4 +1,4 @@
-# LLM Token Analyzer
+# LLM Token Vacabulary Analyzer
 Uncover what's missing in AI language models' vocabularies. This project provides tools to:
 1. Extract the complete token vocabulary from any LLM
 2. Analyze tokens to detect patterns of inclusion/exclusion
