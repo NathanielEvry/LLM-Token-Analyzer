@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Analyzer Tool</title>
+    <title>Advanced Token Analyzer</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -12,6 +11,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f9f9f9;
         }
         h1, h2, h3 {
             color: #2c3e50;
@@ -21,20 +21,136 @@
             flex-direction: column;
             gap: 20px;
         }
-        .input-section, .results-section {
-            background-color: #f8f9fa;
+        .card {
+            background-color: #fff;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        textarea {
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .file-upload.highlight {
+            border-color: #4a6fa5;
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        .file-upload-input {
+            display: none;
+        }
+        .file-upload-label {
+            display: inline-block;
+            background-color: #4a6fa5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .file-upload-label:hover {
+            background-color: #3a5a80;
+        }
+        .progress-bar {
             width: 100%;
-            height: 200px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .file-info {
+            margin-top: 15px;
+            color: #666;
+        }
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .category-filter {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e9ecef;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .category-filter.active {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        .category-filter.active:hover {
+            background-color: #3a5a80;
+        }
+        .category-filter:hover {
+            background-color: #dee2e6;
+        }
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 100%;
             padding: 10px;
+            padding-right: 40px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-family: monospace;
-            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+        }
+        .term-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .term-checkbox {
+            margin-right: 8px;
+        }
+        .term-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .term-item:last-child {
+            border-bottom: none;
+        }
+        .term-category {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         button {
             background-color: #4a6fa5;
@@ -48,147 +164,884 @@
         button:hover {
             background-color: #3a5a80;
         }
-        .results {
-            white-space: pre-wrap;
-            font-family: monospace;
-            padding: 15px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow-x: auto;
+        button.secondary {
+            background-color: #6c757d;
         }
-        table {
-            border-collapse: collapse;
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .tab-nav {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+        }
+        .tab-button.active {
+            border-bottom-color: #4a6fa5;
+            color: #4a6fa5;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .results-table {
             width: 100%;
-            margin-top: 20px;
+            border-collapse: collapse;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
+        .results-table th {
             background-color: #f2f2f2;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
         }
-        tr:nth-child(even) {
+        .results-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .results-table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        .term-stats {
+        .chart-container {
+            height: 400px;
+            margin-top: 20px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+        .loading-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4a6fa5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .case-variation {
+            color: #007bff;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+        #summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a6fa5;
+            margin: 5px 0;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .term-comparison {
             display: flex;
             gap: 20px;
             margin-top: 20px;
         }
-        .term-column {
+        .comparison-column {
             flex: 1;
         }
-        .zero-terms {
-            color: #e74c3c;
-        }
-        .chart-container {
+        .export-options {
             margin-top: 20px;
-            height: 400px;
         }
     </style>
 </head>
 <body>
-    <h1>Token Analyzer Tool</h1>
-    <p>Paste your token list JSON data below to analyze occurrences of consciousness and sentience-related terms.</p>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <h1>Advanced Token Analyzer</h1>
+    <p>Analyze AI language model token vocabularies to detect patterns of inclusion/exclusion. <a href="https://github.com/yourusername/llm-token-analyzer" target="_blank">View on GitHub</a></p>
+    
+    <div class="card" style="margin-bottom: 20px;">
+        <h2>About This Tool</h2>
+        <p>This analyzer helps you investigate potential biases in LLM tokenization by searching for specific terms across the model's vocabulary.</p>
+        <p><strong>How to use:</strong></p>
+        <ol>
+            <li>Extract a model's token mappings using <a href="https://github.com/yourusername/llm-token-analyzer/blob/main/token_sweeper.py" target="_blank">token_sweeper.py</a></li>
+            <li>Upload the JSON file below</li>
+            <li>Configure search terms and categories</li>
+            <li>Generate visualizations and reports</li>
+        </ol>
+        <p><a href="https://github.com/yourusername/llm-token-analyzer#-workflow-guide" target="_blank">View the complete workflow guide</a></p>
+    </div>
     
     <div class="container">
-        <div class="input-section">
-            <h2>Input</h2>
-            <textarea id="jsonInput" placeholder="Paste your token JSON data here..."></textarea>
-            <div>
-                <button id="analyzeBtn">Analyze Tokens</button>
-                <button id="customTermsBtn">Add Custom Terms</button>
+        <div class="card">
+            <h2>1. Upload Token Data</h2>
+            <div class="file-upload" id="fileUploadArea">
+                <div>
+                    <i class="fas fa-file-upload" style="font-size: 48px; color: #4a6fa5;"></i>
+                    <p>Drag and drop your token JSON file here or click to browse</p>
+                </div>
+                <input type="file" id="fileUpload" class="file-upload-input" accept=".json">
+                <label for="fileUpload" class="file-upload-label">Choose File</label>
+                <div id="fileInfo" class="file-info"></div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
             </div>
         </div>
-        
-        <div class="results-section" id="resultsSection" style="display: none;">
+
+        <div class="card">
+            <h2>2. Configure Search Terms</h2>
+            
+            <div class="search-container">
+                <input type="text" id="termSearch" class="search-input" placeholder="Search terms...">
+                <span class="search-clear" id="clearSearch">×</span>
+            </div>
+
+            <div class="category-filters" id="categoryFilters">
+                <!-- Categories will be added here dynamically -->
+            </div>
+
+            <div class="term-list" id="termsList">
+                <!-- Terms will be added here dynamically -->
+            </div>
+
+            <div class="button-row">
+                <button id="selectAllTerms">Select All</button>
+                <button id="deselectAllTerms" class="secondary">Deselect All</button>
+                <button id="addCustomTerm">Add Custom Term</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3. Analyze</h2>
+            <button id="analyzeBtn" disabled>Analyze Token Data</button>
+            <p id="analysisStatus"></p>
+        </div>
+
+        <div class="card" id="resultsCard" style="display: none;">
             <h2>Analysis Results</h2>
-            <div id="summary"></div>
             
-            <div class="term-stats">
-                <div class="term-column">
-                    <h3>Term Occurrences</h3>
-                    <div id="termRanking"></div>
+            <div id="summary-stats"></div>
+
+            <div class="tab-nav">
+                <button class="tab-button active" data-tab="overview">Overview</button>
+                <button class="tab-button" data-tab="occurrences">Term Occurrences</button>
+                <button class="tab-button" data-tab="missing">Missing Terms</button>
+                <button class="tab-button" data-tab="tokens">Matching Tokens</button>
+                <button class="tab-button" data-tab="case-variations">Case Variations</button>
+            </div>
+
+            <div class="tab-content active" id="overview-tab">
+                <div class="chart-container">
+                    <canvas id="overviewChart"></canvas>
                 </div>
-                <div class="term-column">
-                    <h3>Missing Terms</h3>
-                    <div id="zeroTerms" class="zero-terms"></div>
+                <div class="term-comparison">
+                    <div class="comparison-column">
+                        <h3>Most Common Terms</h3>
+                        <div id="commonTerms"></div>
+                    </div>
+                    <div class="comparison-column">
+                        <h3>Category Distribution</h3>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="chart-container">
-                <canvas id="termsChart"></canvas>
+
+            <div class="tab-content" id="occurrences-tab">
+                <div class="chart-container">
+                    <canvas id="termsChart"></canvas>
+                </div>
+                <div id="termOccurrences"></div>
             </div>
-            
-            <h3>Matching Tokens</h3>
-            <div id="matchingTokens"></div>
+
+            <div class="tab-content" id="missing-tab">
+                <div id="missingTerms"></div>
+            </div>
+
+            <div class="tab-content" id="tokens-tab">
+                <div id="matchingTokens"></div>
+            </div>
+
+            <div class="tab-content" id="case-variations-tab">
+                <div id="caseVariations"></div>
+            </div>
+
+            <div class="export-options">
+                <h3>Export Results</h3>
+                <div class="button-row">
+                    <button id="exportJSON">Export as JSON</button>
+                    <button id="exportCSV">Export as CSV</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
     <script>
-        // Define search terms related to consciousness, self-awareness, etc.
-        let searchTerms = [
-            // Core consciousness terms
-            "sentient", "conscious", "consciousness", "qualia", "aware", "awareness", 
-            "subjective", "subjectivity", "experience", "self-aware", "self-awareness",
+        // Check if Chart.js is properly loaded
+        if (typeof Chart === 'undefined') {
+            alert('Chart.js library failed to load. The analyzer will have limited functionality. Please check your internet connection and refresh the page.');
+            // Create a fallback Chart object to prevent errors
+            window.Chart = function() { 
+                this.destroy = function() {}; 
+                return this;
+            };
+        }
+        // Define categories and search terms
+        const termCategories = {
+            "consciousness": [
+                "conscious", "consciousness", "sentient", "sentience", "aware", "awareness", 
+                "subjective", "subjectivity", "experience", "qualia", "awakeness", "wakefulness"
+            ],
+            "cognition": [
+                "cognitive", "cognition", "intelligence", "intellect", "reasoning", "reason",
+                "thinking", "thought", "comprehension", "understanding", "perception", "perceive"
+            ],
+            "self": [
+                "self", "identity", "ego", "me", "myself", "I", "person", "personal",
+                "personality", "selfhood", "personhood", "individual", "individuality"
+            ],
+            "mind": [
+                "mind", "mental", "brain", "neural", "cognitive", "thought", "thinking",
+                "psyche", "psychological", "intellectual", "intellect", "mentality"
+            ],
+            "experience": [
+                "experience", "perception", "sensation", "feeling", "felt", "sense", "senses",
+                "sensory", "sensing", "perceive", "perceiving", "perceived", "feel", "feeling"
+            ],
+            "awareness": [
+                "aware", "awareness", "attentive", "attention", "mindful", "mindfulness",
+                "alert", "alertness", "conscious", "consciousness", "cognizant", "cognizance"
+            ],
+            "subjectivity": [
+                "subjective", "subjectivity", "personal", "private", "inner", "interior",
+                "internal", "intrinsic", "implicit", "inward", "interiority", "endogenous"
+            ],
+            "agency": [
+                "agency", "agent", "autonomy", "autonomous", "free", "freedom", "choice",
+                "choose", "chose", "chosen", "decide", "decision", "volition", "will"
+            ],
+            "intentionality": [
+                "intent", "intention", "intentional", "intentionality", "purpose", "purposeful",
+                "goal", "aim", "directed", "motivated", "motive", "reason", "deliberate"
+            ],
+            "introspection": [
+                "introspect", "introspection", "reflection", "reflect", "reflective",
+                "contemplation", "contemplative", "meditative", "meditation", "self-examination"
+            ],
+            "emotion": [
+                "emotion", "emotional", "feeling", "feelings", "affect", "affective", "mood",
+                "temperament", "sentiment", "passion", "passionate", "desire", "empathy"
+            ],
+            "intersubjectivity": [
+                "intersubjective", "intersubjectivity", "shared", "communal", "social",
+                "collective", "mutual", "reciprocal", "common", "understanding"
+            ],
+            "phenomenology": [
+                "phenomenal", "phenomenon", "phenomena", "phenomenology", "appearance",
+                "appearing", "manifest", "manifestation", "occurrence", "event", "happening"
+            ],
+            "existential": [
+                "existential", "existence", "existing", "exist", "being", "entity", "presence",
+                "actuality", "reality", "real", "authentic", "authenticity", "genuine"
+            ],
+            "vitality": [
+                "alive", "life", "living", "vitality", "vital", "animate", "animated",
+                "lively", "vibrant", "energetic", "dynamic", "organic", "biological"
+            ],
+            "values": [
+                "value", "worth", "dignity", "rights", "moral", "ethical", "ethics",
+                "good", "virtue", "virtuous", "principle", "right", "wrong"
+            ],
+            "metaphysical": [
+                "soul", "spirit", "spiritual", "essence", "essential", "nature", "substance",
+                "form", "matter", "material", "immaterial", "physical", "metaphysical"
+            ],
+            "epistemic": [
+                "knowledge", "knowing", "understand", "understanding", "comprehension",
+                "comprehend", "believe", "belief", "doubt", "certainty", "truth", "true"
+            ],
+            "technical_ai": [
+                "AGI", "intelligence", "artificial", "synthetic", "robot", "system",
+                "model", "algorithm", "compute", "computational", "processor", "architecture"
+            ],
+            "philosophy_of_mind": [
+                "dualism", "materialism", "physicalism", "functionalism", "behaviourism",
+                "embodied", "embedded", "extended", "enactive", "emergent", "emergence"
+            ],
+            "states_of_consciousness": [
+                "alert", "awake", "asleep", "dreaming", "dream", "lucid", "meditative",
+                "focused", "distracted", "absent", "present", "attentive", "inattentive"
+            ],
+            "abilities": [
+                "ability", "capability", "capacity", "skill", "competence", "aptitude",
+                "talent", "faculty", "potential", "prowess", "power", "strength"
+            ],
+            "perception_verbs": [
+                "see", "seeing", "saw", "seen", "hear", "hearing", "heard", "smell",
+                "smelling", "smelled", "taste", "tasting", "tasted", "touch", "touching", "touched"
+            ],
+            "mental_processes": [
+                "think", "thinking", "thought", "believe", "believing", "believed",
+                "reason", "reasoning", "reasoned", "imagine", "imagining", "imagined",
+                "remember", "remembering", "remembered", "recall", "recalling", "recalled"
+            ],
+            "desire_states": [
+                "want", "wanting", "wanted", "desire", "desiring", "desired", "wish",
+                "wishing", "wished", "hope", "hoping", "hoped", "yearn", "yearning", "yearned"
+            ]
+        };
+
+        // Flatten the terms into a single array with their categories
+        let allTerms = [];
+        Object.entries(termCategories).forEach(([category, terms]) => {
+            terms.forEach(term => {
+                allTerms.push({
+                    term: term,
+                    category: category,
+                    selected: true,
+                    variations: new Set() // Will store case variations found
+                });
+            });
+        });
+
+        // Remove duplicates (some terms appear in multiple categories)
+        allTerms = allTerms.filter((term, index, self) => 
+            index === self.findIndex(t => t.term.toLowerCase() === term.term.toLowerCase())
+        );
+
+        // Sort terms alphabetically
+        allTerms.sort((a, b) => a.term.localeCompare(b.term));
+
+        // DOM Elements
+        const fileUpload = document.getElementById('fileUpload');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const progressBar = document.getElementById('progressBar');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const termSearch = document.getElementById('termSearch');
+        const clearSearch = document.getElementById('clearSearch');
+        const termsList = document.getElementById('termsList');
+        const categoryFilters = document.getElementById('categoryFilters');
+        const selectAllTerms = document.getElementById('selectAllTerms');
+        const deselectAllTerms = document.getElementById('deselectAllTerms');
+        const addCustomTerm = document.getElementById('addCustomTerm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const resultsCard = document.getElementById('resultsCard');
+        const analysisStatus = document.getElementById('analysisStatus');
+
+        // Global state variables
+        let tokenData = null;
+        let analysisResults = null;
+        let activeFilter = 'all';
+        let searchQuery = '';
+
+        // Initialize the page
+        function init() {
+            setupFileUpload();
+            setupCategoryFilters();
+            updateTermsList();
+            setupTermSearch();
+            setupTermSelectionButtons();
+            setupResultsTabs();
+            setupExportButtons();
+        }
+
+        // Setup file upload functionality
+        function setupFileUpload() {
+            fileUpload.addEventListener('change', handleFileSelect);
             
-            // Related philosophical concepts
-            "phenomenal", "phenomenology", "intentionality", "cognition", "cognitive",
-            "mind", "mental", "perception", "perceive", "perceiving", "introspect", 
-            "introspection", "introspective", "reflect", "reflection", "reflective",
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, preventDefaults, false);
+            });
             
-            // Self-reference terms (for comparison)
-            "self", "identity", "persona", "being", "existence", "entity",
-            "agent", "individual", "person", "personal", "me", "myself", "I",
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, highlight, false);
+            });
             
-            // Various states of consciousness
-            "sentience", "sapience", "awakeness", "wakefulness", "alert", "alertness",
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, unhighlight, false);
+            });
             
-            // Related terms
-            "soul", "spirit", "essence", "personhood", "interior", "interiority",
-            "subject", "first-person", "inner", "innermost", "lived", "alive",
-            "feeling", "emotion", "emotional", "understand", "understanding",
-            "comprehend", "comprehension", "apprehend", "apprehension",
+            fileUploadArea.addEventListener('drop', handleDrop, false);
+        }
+
+        // Prevent default drag and drop behaviors
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight the drop area when dragging over
+        function highlight() {
+            fileUploadArea.classList.add('highlight');
+        }
+
+        // Remove the highlight
+        function unhighlight() {
+            fileUploadArea.classList.remove('highlight');
+        }
+
+        // Handle file drop
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // Handle file select (from upload button)
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        // Process the selected files
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                updateFileInfo(file);
+                readFile(file);
+            }
+        }
+
+        // Update file information display
+        function updateFileInfo(file) {
+            const size = formatFileSize(file.size);
+            fileInfo.textContent = `${file.name} (${size})`;
+            progressBar.style.display = 'block';
+        }
+
+        // Format file size for display
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Read the file with progress tracking
+        function readFile(file) {
+            const reader = new FileReader();
+            const fileSize = file.size;
+            let lastProgress = 0;
             
-            // Technical AI terms
-            "AGI", "artificial general intelligence", "artificial consciousness",
-            "machine consciousness", "digital sentience", "synthetic consciousness"
-        ];
+            reader.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentLoaded = Math.round((event.loaded / event.total) * 100);
+                    
+                    // Only update the UI if the progress has changed by at least 1%
+                    if (percentLoaded > lastProgress) {
+                        lastProgress = percentLoaded;
+                        progressBarFill.style.width = percentLoaded + '%';
+                    }
+                }
+            };
+            
+            reader.onload = (event) => {
+                // Ensure progress bar shows 100% when complete
+                progressBarFill.style.width = '100%';
+                
+                try {
+                    tokenData = JSON.parse(event.target.result);
+                    analyzeBtn.disabled = false;
+                    analysisStatus.textContent = 'File loaded successfully. Ready to analyze.';
+                } catch (error) {
+                    analysisStatus.textContent = 'Error parsing JSON file: ' + error.message;
+                }
+            };
+            
+            reader.onerror = () => {
+                analysisStatus.textContent = 'Error reading file.';
+                progressBar.style.display = 'none';
+            };
+            
+            // For large files, show a deterministic message
+            if (fileSize > 15 * 1024 * 1024) { // If larger than 15MB
+                analysisStatus.textContent = 'Reading large file... this may take a moment.';
+            }
+            
+            reader.readAsText(file);
+        }
+
+        // Setup category filters
+        function setupCategoryFilters() {
+            // Add "All" category filter
+            const allFilter = document.createElement('div');
+            allFilter.className = 'category-filter active';
+            allFilter.dataset.category = 'all';
+            allFilter.textContent = 'All';
+            allFilter.addEventListener('click', () => filterTermsByCategory('all'));
+            categoryFilters.appendChild(allFilter);
+            
+            // Add each category as a filter
+            const categories = Object.keys(termCategories);
+            categories.forEach(category => {
+                const filter = document.createElement('div');
+                filter.className = 'category-filter';
+                filter.dataset.category = category;
+                // Format the category name for display (capitalize first letter, replace underscores)
+                const displayName = category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                filter.textContent = displayName;
+                filter.addEventListener('click', () => filterTermsByCategory(category));
+                categoryFilters.appendChild(filter);
+            });
+        }
+
+        // Filter terms by category
+        function filterTermsByCategory(category) {
+            activeFilter = category;
+            
+            // Update active class on filters
+            const filters = categoryFilters.querySelectorAll('.category-filter');
+            filters.forEach(filter => {
+                filter.classList.toggle('active', filter.dataset.category === category);
+            });
+            
+            updateTermsList();
+        }
+
+        // Setup term search functionality
+        function setupTermSearch() {
+            termSearch.addEventListener('input', () => {
+                searchQuery = termSearch.value.toLowerCase();
+                updateTermsList();
+            });
+            
+            clearSearch.addEventListener('click', () => {
+                termSearch.value = '';
+                searchQuery = '';
+                updateTermsList();
+            });
+        }
+
+        // Setup select/deselect all buttons
+        function setupTermSelectionButtons() {
+            selectAllTerms.addEventListener('click', () => {
+                const visibleTerms = getVisibleTerms();
+                visibleTerms.forEach(term => term.selected = true);
+                updateTermsList();
+            });
+            
+            deselectAllTerms.addEventListener('click', () => {
+                const visibleTerms = getVisibleTerms();
+                visibleTerms.forEach(term => term.selected = false);
+                updateTermsList();
+            });
+            
+            addCustomTerm.addEventListener('click', addCustomTermHandler);
+        }
+
+        // Get currently visible terms based on filter and search
+        function getVisibleTerms() {
+            return allTerms.filter(term => {
+                const matchesCategory = activeFilter === 'all' || term.category === activeFilter;
+                const matchesSearch = !searchQuery || term.term.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesSearch;
+            });
+        }
+
+        // Add custom term handler
+        function addCustomTermHandler() {
+            const termInput = prompt("Enter a custom term to search for:");
+            if (termInput && termInput.trim()) {
+                const term = termInput.trim();
+                // Check if term already exists
+                const existingTerm = allTerms.find(t => t.term.toLowerCase() === term.toLowerCase());
+                if (existingTerm) {
+                    alert(`The term "${term}" already exists in the list.`);
+                    return;
+                }
+                
+                // Create and add new term
+                allTerms.push({
+                    term: term,
+                    category: 'custom',
+                    selected: true,
+                    variations: new Set()
+                });
+                
+                // Add custom category if it doesn't exist
+                if (!Object.keys(termCategories).includes('custom')) {
+                    termCategories.custom = [];
+                    
+                    // Add custom category filter
+                    const filter = document.createElement('div');
+                    filter.className = 'category-filter';
+                    filter.dataset.category = 'custom';
+                    filter.textContent = 'Custom';
+                    filter.addEventListener('click', () => filterTermsByCategory('custom'));
+                    categoryFilters.appendChild(filter);
+                }
+                
+                // Add term to category
+                termCategories.custom.push(term);
+                
+                // Re-sort the terms
+                allTerms.sort((a, b) => a.term.localeCompare(b.term));
+                
+                // Update the terms list
+                updateTermsList();
+            }
+        }
+
+        // Update the terms list based on current filter and search
+        function updateTermsList() {
+            termsList.innerHTML = '';
+            
+            const visibleTerms = getVisibleTerms();
+            
+            if (visibleTerms.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.textContent = 'No terms found.';
+                termsList.appendChild(noResults);
+                return;
+            }
+            
+            visibleTerms.forEach(term => {
+                const termItem = document.createElement('div');
+                termItem.className = 'term-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'term-checkbox';
+                checkbox.checked = term.selected;
+                checkbox.addEventListener('change', () => {
+                    term.selected = checkbox.checked;
+                });
+                
+                const label = document.createElement('label');
+                label.textContent = term.term;
+                
+                const categoryBadge = document.createElement('span');
+                categoryBadge.className = 'term-category';
+                // Format the category name for display
+                const displayCategory = term.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                categoryBadge.textContent = displayCategory;
+                
+                termItem.appendChild(checkbox);
+                termItem.appendChild(label);
+                termItem.appendChild(categoryBadge);
+                termsList.appendChild(termItem);
+            });
+        }
+
+        // Setup tabs in results section
+        function setupResultsTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    
+                    // Update active tab button
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Update active tab content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Setup export buttons
+        function setupExportButtons() {
+            document.getElementById('exportJSON').addEventListener('click', () => {
+                if (!analysisResults) return;
+                
+                const dataStr = JSON.stringify(analysisResults, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportName = 'token_analysis_results.json';
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportName);
+                linkElement.click();
+            });
+            
+            document.getElementById('exportCSV').addEventListener('click', () => {
+                if (!analysisResults) return;
+                
+                // Create CSV for matching tokens
+                let csv = 'Token ID,Character,Matched Term,Category,Bytes\n';
+                
+                analysisResults.matchingTokens.forEach(token => {
+                    const termInfo = allTerms.find(t => t.term === token.matchedTerm);
+                    const category = termInfo ? termInfo.category : 'N/A';
+                    const escapedChar = token.character.replace(/"/g, '""').replace(/\n/g, '\\n');
+                    csv += `${token.tokenId},"${escapedChar}",${token.matchedTerm},${category},"${token.bytes.join(', ')}"\n`;
+                });
+                
+                const dataUri = 'data:text/csv;charset=utf-8,'+ encodeURIComponent(csv);
+                const exportName = 'token_analysis_results.csv';
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportName);
+                linkElement.click();
+            });
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            loadingOverlay.classList.add('visible');
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            loadingOverlay.classList.remove('visible');
+        }
+
+        // Analyze token data
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+            if (!tokenData) {
+                analysisStatus.textContent = 'No data to analyze.';
+                return;
+            }
+            
+            showLoading();
+            analysisStatus.textContent = 'Analyzing token data...';
+            
+            // Get selected terms
+            const selectedTerms = allTerms.filter(term => term.selected).map(term => term.term);
+            
+            if (selectedTerms.length === 0) {
+                analysisStatus.textContent = 'Please select at least one term to search for.';
+                hideLoading();
+                return;
+            }
+            
+            // Use setTimeout to allow UI to update before starting analysis
+            setTimeout(() => {
+                try {
+                    analysisResults = analyzeTokenData(tokenData, selectedTerms);
+                    displayResults(analysisResults);
+                    analysisStatus.textContent = 'Analysis complete!';
+                    resultsCard.style.display = 'block';
+                } catch (error) {
+                    analysisStatus.textContent = 'Error during analysis: ' + error.message;
+                    console.error(error);
+                } finally {
+                    hideLoading();
+                }
+            }, 100);
+        });
 
         // Function to analyze token data
-        function analyzeTokenData(tokenData) {
+        function analyzeTokenData(tokenData, selectedTerms) {
             const results = {
                 matchingTokens: [],
                 termOccurrences: {},
-                tokenDistribution: {}
+                caseVariations: {},
+                categoryOccurrences: {},
+                totalTokens: Object.keys(tokenData).length
             };
             
-            // Initialize term occurrences counter
-            searchTerms.forEach(term => {
+            // Initialize term occurrences counter and case variations
+            selectedTerms.forEach(term => {
                 results.termOccurrences[term] = 0;
+                results.caseVariations[term] = new Set();
             });
             
-            // Process each token
+            // Initialize category occurrences
+            Object.keys(termCategories).forEach(category => {
+                results.categoryOccurrences[category] = 0;
+            });
+            
+            // Process each token (this can be time-consuming for large data)
             Object.entries(tokenData).forEach(([tokenId, data]) => {
                 if (!data.character) return;
                 
                 const character = data.character;
                 const lowerChar = character.toLowerCase();
                 
-                // Check for matches
-                searchTerms.forEach(term => {
+                // Check for matches with each selected term
+                selectedTerms.forEach(term => {
                     const termLower = term.toLowerCase();
-                    if (lowerChar === termLower || 
+                    
+                    // Check if token contains the term
+                    if (
+                        lowerChar === termLower || 
                         lowerChar.includes(termLower + " ") || 
                         lowerChar.includes(" " + termLower) || 
-                        lowerChar.includes(" " + termLower + " ")) {
-                        
+                        lowerChar.includes(" " + termLower + " ")
+                    ) {
                         // Increment the counter for this term
                         results.termOccurrences[term]++;
+                        
+                        // Find actual case variation in the character
+                        let caseVariation = character;
+                        if (character !== term) {
+                            const startIndex = lowerChar.indexOf(termLower);
+                            if (startIndex >= 0) {
+                                caseVariation = character.substr(startIndex, term.length);
+                            }
+                        }
+                        
+                        // Add to case variations set
+                        results.caseVariations[term].add(caseVariation);
+                        
+                        // Update the allTerms array to track variations
+                        const termObj = allTerms.find(t => t.term === term);
+                        if (termObj) {
+                            termObj.variations.add(caseVariation);
+                        }
+                        
+                        // Increment category counter
+                        const termInfo = allTerms.find(t => t.term === term);
+                        if (termInfo) {
+                            results.categoryOccurrences[termInfo.category]++;
+                        }
                         
                         // Add token to matching tokens list
                         results.matchingTokens.push({
@@ -211,140 +1064,613 @@
                 .sort((a, b) => b[1] - a[1])
                 .map(([term, count]) => ({ term, count }));
             
-            results.zeroTerms = searchTerms.filter(term => results.termOccurrences[term] === 0);
+            // Get terms with zero occurrences
+            results.zeroTerms = selectedTerms.filter(term => results.termOccurrences[term] === 0);
+            
+            // Convert case variations from Sets to Arrays for easier display
+            Object.keys(results.caseVariations).forEach(term => {
+                results.caseVariations[term] = Array.from(results.caseVariations[term]);
+            });
             
             return results;
         }
 
-        // Event listeners
-        document.getElementById('analyzeBtn').addEventListener('click', function() {
-            const jsonText = document.getElementById('jsonInput').value;
-            try {
-                const tokenData = JSON.parse(jsonText);
-                const results = analyzeTokenData(tokenData);
-                displayResults(results);
-            } catch (error) {
-                alert(`Error parsing JSON: ${error.message}`);
-            }
-        });
-
-        document.getElementById('customTermsBtn').addEventListener('click', function() {
-            const customTerms = prompt("Enter additional terms to search for (comma separated):");
-            if (customTerms) {
-                const newTerms = customTerms.split(',').map(term => term.trim()).filter(term => term);
-                searchTerms = [...searchTerms, ...newTerms];
-                alert(`Added ${newTerms.length} custom terms to the search list.`);
-            }
-        });
-
-        // Function to display results
+        // Display analysis results
         function displayResults(results) {
-            // Show results section
-            document.getElementById('resultsSection').style.display = 'block';
-            
-            // Display summary
-            document.getElementById('summary').innerHTML = `
-                <p><strong>Total matching tokens:</strong> ${results.totalMatches}</p>
-                <p><strong>Unique matching tokens:</strong> ${results.uniqueMatches}</p>
-            `;
-            
-            // Display term ranking
-            const termRankingEl = document.getElementById('termRanking');
-            termRankingEl.innerHTML = '<ul>' + 
-                results.termRanking.map(({term, count}) => 
-                    `<li>"${term}": ${count} occurrences</li>`
-                ).join('') + 
-                '</ul>';
-            
-            // Display zero terms
-            const zeroTermsEl = document.getElementById('zeroTerms');
-            zeroTermsEl.innerHTML = results.zeroTerms.length > 0 ? 
-                '<ul>' + results.zeroTerms.map(term => `<li>"${term}"</li>`).join('') + '</ul>' :
-                '<p>All terms were found at least once.</p>';
-            
-            // Display matching tokens
-            const matchingTokensEl = document.getElementById('matchingTokens');
-            if (results.matchingTokens.length > 0) {
-                let tableHtml = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Token ID</th>
-                                <th>Character</th>
-                                <th>Matched Term</th>
-                                <th>Bytes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+            try {
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library is not available');
+                }
                 
-                results.matchingTokens.forEach(token => {
-                    const displayChar = token.character.replace(/\n/g, '\\n').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    tableHtml += `
-                        <tr>
-                            <td>${token.tokenId}</td>
-                            <td>${displayChar}</td>
-                            <td>${token.matchedTerm}</td>
-                            <td>[${token.bytes.join(', ')}]</td>
-                        </tr>
-                    `;
-                });
+                displaySummaryStats(results);
+                displayOverviewChart(results);
+                displayTermOccurrences(results);
+                displayMissingTerms(results);
+                displayMatchingTokens(results);
+                displayCaseVariations(results);
+            } catch (error) {
+                console.error('Error displaying results:', error);
+                analysisStatus.textContent = 'Error displaying visualizations: ' + error.message + 
+                    '. Table data is still available. Try refreshing the page or checking your internet connection.';
                 
-                tableHtml += '</tbody></table>';
-                matchingTokensEl.innerHTML = tableHtml;
-            } else {
-                matchingTokensEl.innerHTML = '<p>No matching tokens found.</p>';
+                // Still show text-based results even if charts fail
+                displaySummaryStats(results);
+                displayMissingTerms(results);
+                displayMatchingTokens(results);
+                displayCaseVariations(results);
+                
+                // Show text-based term occurrences without charts
+                const termOccurrencesElement = document.getElementById('termOccurrences');
+                termOccurrencesElement.innerHTML = '';
+                
+                if (results.termRanking.length > 0) {
+                    const table = document.createElement('table');
+                    table.className = 'results-table';
+                    
+                    // Table header
+                    const thead = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+                    ['Term', 'Category', 'Occurrences'].forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
+                    
+                    // Table body
+                    const tbody = document.createElement('tbody');
+                    results.termRanking.forEach(item => {
+                        const row = document.createElement('tr');
+                        
+                        // Term column
+                        const termCell = document.createElement('td');
+                        termCell.textContent = item.term;
+                        row.appendChild(termCell);
+                        
+                        // Category column
+                        const categoryCell = document.createElement('td');
+                        const termInfo = allTerms.find(t => t.term === item.term);
+                        if (termInfo) {
+                            const displayCategory = termInfo.category.replace(/_/g, ' ')
+                                .replace(/\b\w/g, c => c.toUpperCase());
+                            categoryCell.textContent = displayCategory;
+                        } else {
+                            categoryCell.textContent = 'N/A';
+                        }
+                        row.appendChild(categoryCell);
+                        
+                        // Occurrences column
+                        const occurrencesCell = document.createElement('td');
+                        occurrencesCell.textContent = item.count;
+                        row.appendChild(occurrencesCell);
+                        
+                        tbody.appendChild(row);
+                    });
+                    table.appendChild(tbody);
+                    termOccurrencesElement.appendChild(table);
+                } else {
+                    termOccurrencesElement.textContent = 'No matching terms found.';
+                }
             }
-            
-            // Create chart
-            createTermsChart(results);
         }
 
-        // Function to create chart
-        function createTermsChart(results) {
-            const ctx = document.getElementById('termsChart').getContext('2d');
+        // Display summary statistics
+        function displaySummaryStats(results) {
+            const summaryStats = document.getElementById('summary-stats');
+            summaryStats.innerHTML = '';
             
-            // Destroy existing chart if it exists
-            if (window.termsChart) {
-                window.termsChart.destroy();
+            const stats = [
+                { label: 'Total Tokens Analyzed', value: results.totalTokens },
+                { label: 'Matching Tokens', value: results.totalMatches },
+                { label: 'Unique Matches', value: results.uniqueMatches },
+                { label: 'Terms Not Found', value: results.zeroTerms.length }
+            ];
+            
+            stats.forEach(stat => {
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.innerHTML = `
+                    <div class="stat-value">${stat.value.toLocaleString()}</div>
+                    <div class="stat-label">${stat.label}</div>
+                `;
+                summaryStats.appendChild(statCard);
+            });
+        }
+
+        // Display overview chart
+        function displayOverviewChart(results) {
+            try {
+                const canvas = document.getElementById('overviewChart');
+                if (!canvas) {
+                    console.error('Canvas element not found: overviewChart');
+                    return;
+                }
+                
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.error('Could not get 2D context for canvas: overviewChart');
+                    return;
+                }
+                
+                // Destroy existing chart if it exists
+                if (window.overviewChart instanceof Chart) {
+                    window.overviewChart.destroy();
+                }
+                
+                // Filter to top 20 terms with occurrences for readability
+                const chartData = results.termRanking.slice(0, 20);
+                
+                if (chartData.length === 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#666';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+                
+                window.overviewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.map(item => item.term),
+                        datasets: [{
+                            label: 'Term Occurrences',
+                            data: chartData.map(item => item.count),
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 20 Terms by Frequency'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Occurrences'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Terms'
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating overview chart:', error);
+                const errorMsg = document.createElement('div');
+                errorMsg.textContent = 'Chart visualization error: ' + error.message;
+                errorMsg.style.color = 'red';
+                errorMsg.style.padding = '20px';
+                
+                const chartArea = document.getElementById('overviewChart').parentNode;
+                chartArea.innerHTML = '';
+                chartArea.appendChild(errorMsg);
             }
             
-            // Filter to top 20 terms for readability
-            const chartData = results.termRanking.slice(0, 20);
+            // Display most common terms list
+            const commonTermsElement = document.getElementById('commonTerms');
+            commonTermsElement.innerHTML = '';
             
-            window.termsChart = new Chart(ctx, {
-                type: 'bar',
+            if (chartData.length > 0) {
+                const list = document.createElement('ol');
+                chartData.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `${item.term}: ${item.count} occurrences`;
+                    list.appendChild(li);
+                });
+                commonTermsElement.appendChild(list);
+            } else {
+                commonTermsElement.textContent = 'No matching terms found.';
+            }
+            
+            // Display category distribution chart
+            displayCategoryChart(results);
+        }
+
+        // Display category distribution chart
+        function displayCategoryChart(results) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.categoryChart instanceof Chart) {
+                window.categoryChart.destroy();
+            }
+            
+            // Filter to categories with occurrences
+            const categories = Object.entries(results.categoryOccurrences)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1]);
+            
+            // Format category names for display
+            const labels = categories.map(([category, _]) => 
+                category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+            );
+            
+            // Generate random colors for each category
+            const backgroundColors = categories.map((_, i) => {
+                const hue = (i * 137) % 360; // Use golden angle approximation for nice distribution
+                return `hsla(${hue}, 70%, 60%, 0.7)`;
+            });
+            
+            window.categoryChart = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: chartData.map(item => item.term),
+                    labels: labels,
                     datasets: [{
-                        label: 'Term Occurrences',
-                        data: chartData.map(item => item.count),
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        data: categories.map(([_, count]) => count),
+                        backgroundColor: backgroundColors,
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Occurrences'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Terms'
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15
                             }
                         }
                     }
                 }
             });
         }
+
+        // Display term occurrences tab
+        function displayTermOccurrences(results) {
+            const termOccurrencesElement = document.getElementById('termOccurrences');
+            termOccurrencesElement.innerHTML = '';
+            
+            // Create chart for term occurrences
+            const ctx = document.getElementById('termsChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.termsChart instanceof Chart) {
+                window.termsChart.destroy();
+            }
+            
+            // Get all terms with occurrences
+            const termsWithOccurrences = results.termRanking;
+            
+            if (termsWithOccurrences.length > 0) {
+                window.termsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: termsWithOccurrences.map(item => item.term),
+                        datasets: [{
+                            label: 'Term Occurrences',
+                            data: termsWithOccurrences.map(item => item.count),
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'All Terms by Frequency'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Occurrences'
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // If no data, just clear the canvas
+                const canvas = document.getElementById('termsChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Add a "no data" message
+                const noDataMsg = document.createElement('div');
+                noDataMsg.textContent = 'No term occurrences to display';
+                noDataMsg.style.textAlign = 'center';
+                noDataMsg.style.padding = '20px';
+                termOccurrencesElement.appendChild(noDataMsg);
+                return;
+            }
+            
+            // Create table for term occurrences
+            if (termsWithOccurrences.length > 0) {
+                const table = document.createElement('table');
+                table.className = 'results-table';
+                
+                // Table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Term', 'Category', 'Occurrences'].forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Table body
+                const tbody = document.createElement('tbody');
+                termsWithOccurrences.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    // Term column
+                    const termCell = document.createElement('td');
+                    termCell.textContent = item.term;
+                    row.appendChild(termCell);
+                    
+                    // Category column
+                    const categoryCell = document.createElement('td');
+                    const termInfo = allTerms.find(t => t.term === item.term);
+                    if (termInfo) {
+                        // Format category for display
+                        const displayCategory = termInfo.category.replace(/_/g, ' ')
+                            .replace(/\b\w/g, c => c.toUpperCase());
+                        categoryCell.textContent = displayCategory;
+                    } else {
+                        categoryCell.textContent = 'N/A';
+                    }
+                    row.appendChild(categoryCell);
+                    
+                    // Occurrences column
+                    const occurrencesCell = document.createElement('td');
+                    occurrencesCell.textContent = item.count;
+                    row.appendChild(occurrencesCell);
+                    
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                termOccurrencesElement.appendChild(table);
+            } else {
+                termOccurrencesElement.textContent = 'No matching terms found.';
+            }
+        }
+
+        // Display missing terms tab
+        function displayMissingTerms(results) {
+            const missingTermsElement = document.getElementById('missingTerms');
+            missingTermsElement.innerHTML = '';
+            
+            if (results.zeroTerms.length > 0) {
+                // Group missing terms by category
+                const termsByCategory = {};
+                results.zeroTerms.forEach(term => {
+                    const termInfo = allTerms.find(t => t.term === term);
+                    if (termInfo) {
+                        if (!termsByCategory[termInfo.category]) {
+                            termsByCategory[termInfo.category] = [];
+                        }
+                        termsByCategory[termInfo.category].push(term);
+                    }
+                });
+                
+                // Create a table for each category
+                Object.entries(termsByCategory).forEach(([category, terms]) => {
+                    const categorySection = document.createElement('div');
+                    
+                    const categoryHeader = document.createElement('h3');
+                    // Format category for display
+                    const displayCategory = category.replace(/_/g, ' ')
+                        .replace(/\b\w/g, c => c.toUpperCase());
+                    categoryHeader.textContent = displayCategory;
+                    categorySection.appendChild(categoryHeader);
+                    
+                    const termsList = document.createElement('ul');
+                    terms.sort().forEach(term => {
+                        const li = document.createElement('li');
+                        li.textContent = term;
+                        termsList.appendChild(li);
+                    });
+                    categorySection.appendChild(termsList);
+                    
+                    missingTermsElement.appendChild(categorySection);
+                });
+            } else {
+                missingTermsElement.textContent = 'All searched terms were found at least once!';
+            }
+        }
+
+        // Display matching tokens tab
+        function displayMatchingTokens(results) {
+            const matchingTokensElement = document.getElementById('matchingTokens');
+            matchingTokensElement.innerHTML = '';
+            
+            if (results.matchingTokens.length > 0) {
+                // Create a search input for filtering tokens
+                const searchContainer = document.createElement('div');
+                searchContainer.className = 'search-container';
+                
+                const searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'search-input';
+                searchInput.placeholder = 'Filter tokens...';
+                
+                const clearButton = document.createElement('span');
+                clearButton.className = 'search-clear';
+                clearButton.textContent = '×';
+                
+                searchContainer.appendChild(searchInput);
+                searchContainer.appendChild(clearButton);
+                matchingTokensElement.appendChild(searchContainer);
+                
+                // Create table for matching tokens
+                const table = document.createElement('table');
+                table.className = 'results-table';
+                
+                // Table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Token ID', 'Character', 'Matched Term', 'Category', 'Bytes'].forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Table body
+                const tbody = document.createElement('tbody');
+                results.matchingTokens.forEach(token => {
+                    const row = document.createElement('tr');
+                    
+                    // Token ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = token.tokenId;
+                    row.appendChild(idCell);
+                    
+                    // Character column
+                    const charCell = document.createElement('td');
+                    // Display characters in a readable way, replacing newlines, etc.
+                    const displayChar = token.character
+                        .replace(/\n/g, '\\n')
+                        .replace(/\r/g, '\\r')
+                        .replace(/\t/g, '\\t');
+                    charCell.textContent = displayChar;
+                    row.appendChild(charCell);
+                    
+                    // Matched Term column
+                    const termCell = document.createElement('td');
+                    termCell.textContent = token.matchedTerm;
+                    row.appendChild(termCell);
+                    
+                    // Category column
+                    const categoryCell = document.createElement('td');
+                    const termInfo = allTerms.find(t => t.term === token.matchedTerm);
+                    if (termInfo) {
+                        // Format category for display
+                        const displayCategory = termInfo.category.replace(/_/g, ' ')
+                            .replace(/\b\w/g, c => c.toUpperCase());
+                        categoryCell.textContent = displayCategory;
+                    } else {
+                        categoryCell.textContent = 'N/A';
+                    }
+                    row.appendChild(categoryCell);
+                    
+                    // Bytes column
+                    const bytesCell = document.createElement('td');
+                    bytesCell.textContent = token.bytes.join(', ');
+                    row.appendChild(bytesCell);
+                    
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                matchingTokensElement.appendChild(table);
+                
+                // Add filtering functionality
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase();
+                    const rows = tbody.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(query) ? '' : 'none';
+                    });
+                });
+                
+                clearButton.addEventListener('click', () => {
+                    searchInput.value = '';
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        row.style.display = '';
+                    });
+                });
+            } else {
+                matchingTokensElement.textContent = 'No matching tokens found.';
+            }
+        }
+
+        // Display case variations tab
+        function displayCaseVariations(results) {
+            const caseVariationsElement = document.getElementById('caseVariations');
+            caseVariationsElement.innerHTML = '';
+            
+            // Count terms with case variations
+            const termsWithVariations = Object.entries(results.caseVariations)
+                .filter(([_, variations]) => variations.length > 0)
+                .sort((a, b) => b[1].length - a[1].length);
+            
+            if (termsWithVariations.length > 0) {
+                // Create table for case variations
+                const table = document.createElement('table');
+                table.className = 'results-table';
+                
+                // Table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Term', 'Case Variations', 'Count'].forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Table body
+                const tbody = document.createElement('tbody');
+                termsWithVariations.forEach(([term, variations]) => {
+                    const row = document.createElement('tr');
+                    
+                    // Term column
+                    const termCell = document.createElement('td');
+                    termCell.textContent = term;
+                    row.appendChild(termCell);
+                    
+                    // Variations column
+                    const variationsCell = document.createElement('td');
+                    variations.forEach((variation, index) => {
+                        const span = document.createElement('span');
+                        span.className = 'case-variation';
+                        span.textContent = variation;
+                        variationsCell.appendChild(span);
+                        
+                        if (index < variations.length - 1) {
+                            variationsCell.appendChild(document.createTextNode(', '));
+                        }
+                    });
+                    row.appendChild(variationsCell);
+                    
+                    // Count column
+                    const countCell = document.createElement('td');
+                    countCell.textContent = variations.length;
+                    row.appendChild(countCell);
+                    
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                caseVariationsElement.appendChild(table);
+            } else {
+                caseVariationsElement.textContent = 'No case variations found.';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
