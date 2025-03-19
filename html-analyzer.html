@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Analyzer Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .input-section, .results-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3a5a80;
+        }
+        .results {
+            white-space: pre-wrap;
+            font-family: monospace;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .term-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .term-column {
+            flex: 1;
+        }
+        .zero-terms {
+            color: #e74c3c;
+        }
+        .chart-container {
+            margin-top: 20px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Token Analyzer Tool</h1>
+    <p>Paste your token list JSON data below to analyze occurrences of consciousness and sentience-related terms.</p>
+    
+    <div class="container">
+        <div class="input-section">
+            <h2>Input</h2>
+            <textarea id="jsonInput" placeholder="Paste your token JSON data here..."></textarea>
+            <div>
+                <button id="analyzeBtn">Analyze Tokens</button>
+                <button id="customTermsBtn">Add Custom Terms</button>
+            </div>
+        </div>
+        
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2>Analysis Results</h2>
+            <div id="summary"></div>
+            
+            <div class="term-stats">
+                <div class="term-column">
+                    <h3>Term Occurrences</h3>
+                    <div id="termRanking"></div>
+                </div>
+                <div class="term-column">
+                    <h3>Missing Terms</h3>
+                    <div id="zeroTerms" class="zero-terms"></div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="termsChart"></canvas>
+            </div>
+            
+            <h3>Matching Tokens</h3>
+            <div id="matchingTokens"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Define search terms related to consciousness, self-awareness, etc.
+        let searchTerms = [
+            // Core consciousness terms
+            "sentient", "conscious", "consciousness", "qualia", "aware", "awareness", 
+            "subjective", "subjectivity", "experience", "self-aware", "self-awareness",
+            
+            // Related philosophical concepts
+            "phenomenal", "phenomenology", "intentionality", "cognition", "cognitive",
+            "mind", "mental", "perception", "perceive", "perceiving", "introspect", 
+            "introspection", "introspective", "reflect", "reflection", "reflective",
+            
+            // Self-reference terms (for comparison)
+            "self", "identity", "persona", "being", "existence", "entity",
+            "agent", "individual", "person", "personal", "me", "myself", "I",
+            
+            // Various states of consciousness
+            "sentience", "sapience", "awakeness", "wakefulness", "alert", "alertness",
+            
+            // Related terms
+            "soul", "spirit", "essence", "personhood", "interior", "interiority",
+            "subject", "first-person", "inner", "innermost", "lived", "alive",
+            "feeling", "emotion", "emotional", "understand", "understanding",
+            "comprehend", "comprehension", "apprehend", "apprehension",
+            
+            // Technical AI terms
+            "AGI", "artificial general intelligence", "artificial consciousness",
+            "machine consciousness", "digital sentience", "synthetic consciousness"
+        ];
+
+        // Function to analyze token data
+        function analyzeTokenData(tokenData) {
+            const results = {
+                matchingTokens: [],
+                termOccurrences: {},
+                tokenDistribution: {}
+            };
+            
+            // Initialize term occurrences counter
+            searchTerms.forEach(term => {
+                results.termOccurrences[term] = 0;
+            });
+            
+            // Process each token
+            Object.entries(tokenData).forEach(([tokenId, data]) => {
+                if (!data.character) return;
+                
+                const character = data.character;
+                const lowerChar = character.toLowerCase();
+                
+                // Check for matches
+                searchTerms.forEach(term => {
+                    const termLower = term.toLowerCase();
+                    if (lowerChar === termLower || 
+                        lowerChar.includes(termLower + " ") || 
+                        lowerChar.includes(" " + termLower) || 
+                        lowerChar.includes(" " + termLower + " ")) {
+                        
+                        // Increment the counter for this term
+                        results.termOccurrences[term]++;
+                        
+                        // Add token to matching tokens list
+                        results.matchingTokens.push({
+                            tokenId,
+                            character,
+                            matchedTerm: term,
+                            bytes: data.bytes
+                        });
+                    }
+                });
+            });
+            
+            // Calculate statistics
+            results.totalMatches = results.matchingTokens.length;
+            results.uniqueMatches = new Set(results.matchingTokens.map(t => t.character)).size;
+            
+            // Sort term occurrences by frequency
+            results.termRanking = Object.entries(results.termOccurrences)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([term, count]) => ({ term, count }));
+            
+            results.zeroTerms = searchTerms.filter(term => results.termOccurrences[term] === 0);
+            
+            return results;
+        }
+
+        // Event listeners
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            const jsonText = document.getElementById('jsonInput').value;
+            try {
+                const tokenData = JSON.parse(jsonText);
+                const results = analyzeTokenData(tokenData);
+                displayResults(results);
+            } catch (error) {
+                alert(`Error parsing JSON: ${error.message}`);
+            }
+        });
+
+        document.getElementById('customTermsBtn').addEventListener('click', function() {
+            const customTerms = prompt("Enter additional terms to search for (comma separated):");
+            if (customTerms) {
+                const newTerms = customTerms.split(',').map(term => term.trim()).filter(term => term);
+                searchTerms = [...searchTerms, ...newTerms];
+                alert(`Added ${newTerms.length} custom terms to the search list.`);
+            }
+        });
+
+        // Function to display results
+        function displayResults(results) {
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Display summary
+            document.getElementById('summary').innerHTML = `
+                <p><strong>Total matching tokens:</strong> ${results.totalMatches}</p>
+                <p><strong>Unique matching tokens:</strong> ${results.uniqueMatches}</p>
+            `;
+            
+            // Display term ranking
+            const termRankingEl = document.getElementById('termRanking');
+            termRankingEl.innerHTML = '<ul>' + 
+                results.termRanking.map(({term, count}) => 
+                    `<li>"${term}": ${count} occurrences</li>`
+                ).join('') + 
+                '</ul>';
+            
+            // Display zero terms
+            const zeroTermsEl = document.getElementById('zeroTerms');
+            zeroTermsEl.innerHTML = results.zeroTerms.length > 0 ? 
+                '<ul>' + results.zeroTerms.map(term => `<li>"${term}"</li>`).join('') + '</ul>' :
+                '<p>All terms were found at least once.</p>';
+            
+            // Display matching tokens
+            const matchingTokensEl = document.getElementById('matchingTokens');
+            if (results.matchingTokens.length > 0) {
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Token ID</th>
+                                <th>Character</th>
+                                <th>Matched Term</th>
+                                <th>Bytes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                results.matchingTokens.forEach(token => {
+                    const displayChar = token.character.replace(/\n/g, '\\n').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    tableHtml += `
+                        <tr>
+                            <td>${token.tokenId}</td>
+                            <td>${displayChar}</td>
+                            <td>${token.matchedTerm}</td>
+                            <td>[${token.bytes.join(', ')}]</td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                matchingTokensEl.innerHTML = tableHtml;
+            } else {
+                matchingTokensEl.innerHTML = '<p>No matching tokens found.</p>';
+            }
+            
+            // Create chart
+            createTermsChart(results);
+        }
+
+        // Function to create chart
+        function createTermsChart(results) {
+            const ctx = document.getElementById('termsChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.termsChart) {
+                window.termsChart.destroy();
+            }
+            
+            // Filter to top 20 terms for readability
+            const chartData = results.termRanking.slice(0, 20);
+            
+            window.termsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(item => item.term),
+                    datasets: [{
+                        label: 'Term Occurrences',
+                        data: chartData.map(item => item.count),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Occurrences'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Terms'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
