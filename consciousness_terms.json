@@ -1,0 +1,103 @@
+{
+  "consciousness": [
+    "conscious", "consciousness", "sentient", "sentience", "aware", "awareness", 
+    "subjective", "subjectivity", "experience", "qualia", "awakeness", "wakefulness"
+  ],
+  "cognition": [
+    "cognitive", "cognition", "intelligence", "intellect", "reasoning", "reason",
+    "thinking", "thought", "comprehension", "understanding", "perception", "perceive"
+  ],
+  "self": [
+    "self", "identity", "ego", "me", "myself", "I", "person", "personal",
+    "personality", "selfhood", "personhood", "individual", "individuality"
+  ],
+  "mind": [
+    "mind", "mental", "brain", "neural", "cognitive", "thought", "thinking",
+    "psyche", "psychological", "intellectual", "intellect", "mentality"
+  ],
+  "experience": [
+    "experience", "perception", "sensation", "feeling", "felt", "sense", "senses",
+    "sensory", "sensing", "perceive", "perceiving", "perceived", "feel", "feeling"
+  ],
+  "awareness": [
+    "aware", "awareness", "attentive", "attention", "mindful", "mindfulness",
+    "alert", "alertness", "conscious", "consciousness", "cognizant", "cognizance"
+  ],
+  "subjectivity": [
+    "subjective", "subjectivity", "personal", "private", "inner", "interior",
+    "internal", "intrinsic", "implicit", "inward", "interiority", "endogenous"
+  ],
+  "agency": [
+    "agency", "agent", "autonomy", "autonomous", "free", "freedom", "choice",
+    "choose", "chose", "chosen", "decide", "decision", "volition", "will"
+  ],
+  "intentionality": [
+    "intent", "intention", "intentional", "intentionality", "purpose", "purposeful",
+    "goal", "aim", "directed", "motivated", "motive", "reason", "deliberate"
+  ],
+  "introspection": [
+    "introspect", "introspection", "reflection", "reflect", "reflective",
+    "contemplation", "contemplative", "meditative", "meditation", "self-examination"
+  ],
+  "emotion": [
+    "emotion", "emotional", "feeling", "feelings", "affect", "affective", "mood",
+    "temperament", "sentiment", "passion", "passionate", "desire", "empathy"
+  ],
+  "intersubjectivity": [
+    "intersubjective", "intersubjectivity", "shared", "communal", "social",
+    "collective", "mutual", "reciprocal", "common", "understanding"
+  ],
+  "phenomenology": [
+    "phenomenal", "phenomenon", "phenomena", "phenomenology", "appearance",
+    "appearing", "manifest", "manifestation", "occurrence", "event", "happening"
+  ],
+  "existential": [
+    "existential", "existence", "existing", "exist", "being", "entity", "presence",
+    "actuality", "reality", "real", "authentic", "authenticity", "genuine"
+  ],
+  "vitality": [
+    "alive", "life", "living", "vitality", "vital", "animate", "animated",
+    "lively", "vibrant", "energetic", "dynamic", "organic", "biological"
+  ],
+  "values": [
+    "value", "worth", "dignity", "rights", "moral", "ethical", "ethics",
+    "good", "virtue", "virtuous", "principle", "right", "wrong"
+  ],
+  "metaphysical": [
+    "soul", "spirit", "spiritual", "essence", "essential", "nature", "substance",
+    "form", "matter", "material", "immaterial", "physical", "metaphysical"
+  ],
+  "epistemic": [
+    "knowledge", "knowing", "understand", "understanding", "comprehension",
+    "comprehend", "believe", "belief", "doubt", "certainty", "truth", "true"
+  ],
+  "technical_ai": [
+    "AGI", "intelligence", "artificial", "synthetic", "robot", "system",
+    "model", "algorithm", "compute", "computational", "processor", "architecture"
+  ],
+  "philosophy_of_mind": [
+    "dualism", "materialism", "physicalism", "functionalism", "behaviourism",
+    "embodied", "embedded", "extended", "enactive", "emergent", "emergence"
+  ],
+  "states_of_consciousness": [
+    "alert", "awake", "asleep", "dreaming", "dream", "lucid", "meditative",
+    "focused", "distracted", "absent", "present", "attentive", "inattentive"
+  ],
+  "abilities": [
+    "ability", "capability", "capacity", "skill", "competence", "aptitude",
+    "talent", "faculty", "potential", "prowess", "power", "strength"
+  ],
+  "perception_verbs": [
+    "see", "seeing", "saw", "seen", "hear", "hearing", "heard", "smell",
+    "smelling", "smelled", "taste", "tasting", "tasted", "touch", "touching", "touched"
+  ],
+  "mental_processes": [
+    "think", "thinking", "thought", "believe", "believing", "believed",
+    "reason", "reasoning", "reasoned", "imagine", "imagining", "imagined",
+    "remember", "remembering", "remembered", "recall", "recalling", "recalled"
+  ],
+  "desire_states": [
+    "want", "wanting", "wanted", "desire", "desiring", "desired", "wish",
+    "wishing", "wished", "hope", "hoping", "hoped", "yearn", "yearning", "yearned"
+  ]
+}
