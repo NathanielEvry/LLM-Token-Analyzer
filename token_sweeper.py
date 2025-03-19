@@ -12,9 +12,8 @@ from datetime import datetime
 # Configuration 
 MODEL_NAME = "gemma-3-1b-it"  # Default model name
 START_ID = 1  # Default starting token ID
-END_ID = 300000  # Default ending token ID
-# API_URL = "http://localhost:1234/v1/completions"  # Local inference server
-API_URL = "http://10.0.0.195:1234/v1/completions"  # Local inference server
+END_ID = 10000  # Default ending token ID
+API_URL = "http://localhost:1234/v1/completions"  # Local inference server
 SAVE_INTERVAL = 100  # Save progress every N tokens
 OUTPUT_DIR = "token_mappings"  # Directory to store token mappings
 RETRY_ATTEMPTS = 3  # Number of retry attempts for failed requests
