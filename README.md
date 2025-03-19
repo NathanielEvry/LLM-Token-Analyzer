@@ -40,9 +40,10 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
 
 ### Running the Analyzer
 
-<center>
+<p align="center">
    <img src='https://github.com/user-attachments/assets/5fbc0e28-a247-4d0d-bf19-f7a5db43b3aa' style="width:20%; border-radius: 30px; box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.4);">
-</center>
+</p>
+
 
 1. Open `token_analyzer.html` in any modern web browser
 2. Upload your token mapping JSON file using the file uploader
@@ -61,6 +62,11 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
 
 ### Complete Token Discovery Workflow
 
+<p align="center">
+   <img src='https://github.com/user-attachments/assets/578ee37e-05b4-4606-9a84-a04895a3d73a' style="width:50%; border-radius: 30px; box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.4);">
+</p>
+
+
 1. **Set Up a Local LLM Server**
    - Install a local inference server like llama.cpp, text-generation-webui, or vLLM
    - Configure it to expose an OpenAI-compatible API (typically on port 1234)
@@ -72,7 +78,7 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
    - For large models, this process may take several hours
 
 3. **Analyze Token Mappings**
-   - Open the HTML analyzer in your browser
+   - Open the HTML analyzer in your browser or at [EveryoneandAI.com](https://everyoneandai.com/html-analyzer.html)
    - Upload the generated token mapping file
    - Configure search terms and categories
    - Generate visualizations and reports
@@ -85,8 +91,6 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
 
 ### How Token Sweeper Works
 The script uses a clever technique to extract the complete vocabulary:
-
-<div style="width:50%">
 
 ```
 ==================================================
@@ -102,8 +106,6 @@ TOKEN SWEEP COMPLETE
     - Skipped (already mapped): 230694
     - Processing rate: 13.63 tokens/second
 ```
-
-</div>
 
 1. It sends a request to the model with a minimal prompt
 2. It sets an extremely high `logit_bias` (+100) for a specific token ID
