@@ -1,5 +1,4 @@
 # LLM Token Analyzer
-
 Uncover what's missing in AI language models' vocabularies. This project provides tools to:
 1. Extract the complete token vocabulary from any LLM
 2. Analyze tokens to detect patterns of inclusion/exclusion
@@ -41,6 +40,10 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
 
 ### Running the Analyzer
 
+<center>
+   <img src='https://github.com/user-attachments/assets/5fbc0e28-a247-4d0d-bf19-f7a5db43b3aa' style="width:20%; border-radius: 30px; box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.4);">
+</center>
+
 1. Open `token_analyzer.html` in any modern web browser
 2. Upload your token mapping JSON file using the file uploader
 3. Configure search terms or use the pre-defined categories
@@ -81,8 +84,26 @@ This will create a `token_mappings_[MODEL_NAME].json` file containing the comple
    - Export data for detailed statistical analysis
 
 ### How Token Sweeper Works
-
 The script uses a clever technique to extract the complete vocabulary:
+
+<div style="width:50%">
+
+```
+==================================================
+TOKEN SWEEP COMPLETE
+==================================================
+
+[*] Statistics:
+    - Elapsed time: 0:00:19.081364
+    - Total tokens mapped: 230954
+    - Tokens processed: 260
+    - Successful: 260
+    - Failed: 0
+    - Skipped (already mapped): 230694
+    - Processing rate: 13.63 tokens/second
+```
+
+</div>
 
 1. It sends a request to the model with a minimal prompt
 2. It sets an extremely high `logit_bias` (+100) for a specific token ID
