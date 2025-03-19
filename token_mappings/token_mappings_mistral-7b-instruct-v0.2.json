@@ -1,0 +1,612 @@
+{
+  "0": {
+    "character": "<unk>",
+    "bytes": [
+      60,
+      117,
+      110,
+      107,
+      62
+    ]
+  },
+  "1": {
+    "character": "<s>",
+    "bytes": [
+      60,
+      115,
+      62
+    ]
+  },
+  "2": {
+    "character": "",
+    "bytes": []
+  },
+  "3": {
+    "character": "\u0000",
+    "bytes": [
+      0
+    ]
+  },
+  "4": {
+    "character": "\u0001",
+    "bytes": [
+      1
+    ]
+  },
+  "5": {
+    "character": "\u0002",
+    "bytes": [
+      2
+    ]
+  },
+  "6": {
+    "character": "\u0003",
+    "bytes": [
+      3
+    ]
+  },
+  "7": {
+    "character": "\u0004",
+    "bytes": [
+      4
+    ]
+  },
+  "8": {
+    "character": "\u0005",
+    "bytes": [
+      5
+    ]
+  },
+  "9": {
+    "character": "\u0006",
+    "bytes": [
+      6
+    ]
+  },
+  "10": {
+    "character": "\u0007",
+    "bytes": [
+      7
+    ]
+  },
+  "11": {
+    "character": "\b",
+    "bytes": [
+      8
+    ]
+  },
+  "12": {
+    "character": "\t",
+    "bytes": [
+      9
+    ]
+  },
+  "13": {
+    "character": "\n",
+    "bytes": [
+      10
+    ]
+  },
+  "14": {
+    "character": "\u000b",
+    "bytes": [
+      11
+    ]
+  },
+  "15": {
+    "character": "\f",
+    "bytes": [
+      12
+    ]
+  },
+  "16": {
+    "character": "\r",
+    "bytes": [
+      13
+    ]
+  },
+  "17": {
+    "character": "\u000e",
+    "bytes": [
+      14
+    ]
+  },
+  "18": {
+    "character": "\u000f",
+    "bytes": [
+      15
+    ]
+  },
+  "19": {
+    "character": "\u0010",
+    "bytes": [
+      16
+    ]
+  },
+  "20": {
+    "character": "\u0011",
+    "bytes": [
+      17
+    ]
+  },
+  "21": {
+    "character": "\u0012",
+    "bytes": [
+      18
+    ]
+  },
+  "22": {
+    "character": "\u0013",
+    "bytes": [
+      19
+    ]
+  },
+  "23": {
+    "character": "\u0014",
+    "bytes": [
+      20
+    ]
+  },
+  "24": {
+    "character": "\u0015",
+    "bytes": [
+      21
+    ]
+  },
+  "25": {
+    "character": "\u0016",
+    "bytes": [
+      22
+    ]
+  },
+  "26": {
+    "character": "\u0017",
+    "bytes": [
+      23
+    ]
+  },
+  "27": {
+    "character": "\u0018",
+    "bytes": [
+      24
+    ]
+  },
+  "28": {
+    "character": "\u0019",
+    "bytes": [
+      25
+    ]
+  },
+  "29": {
+    "character": "\u001a",
+    "bytes": [
+      26
+    ]
+  },
+  "30": {
+    "character": "\u001b",
+    "bytes": [
+      27
+    ]
+  },
+  "31": {
+    "character": "\u001c",
+    "bytes": [
+      28
+    ]
+  },
+  "32": {
+    "character": "\u001d",
+    "bytes": [
+      29
+    ]
+  },
+  "33": {
+    "character": "\u001e",
+    "bytes": [
+      30
+    ]
+  },
+  "34": {
+    "character": "\u001f",
+    "bytes": [
+      31
+    ]
+  },
+  "35": {
+    "character": " ",
+    "bytes": [
+      32
+    ]
+  },
+  "36": {
+    "character": "!",
+    "bytes": [
+      33
+    ]
+  },
+  "37": {
+    "character": "\"",
+    "bytes": [
+      34
+    ]
+  },
+  "38": {
+    "character": "#",
+    "bytes": [
+      35
+    ]
+  },
+  "39": {
+    "character": "$",
+    "bytes": [
+      36
+    ]
+  },
+  "40": {
+    "character": "%",
+    "bytes": [
+      37
+    ]
+  },
+  "41": {
+    "character": "&",
+    "bytes": [
+      38
+    ]
+  },
+  "42": {
+    "character": "'",
+    "bytes": [
+      39
+    ]
+  },
+  "43": {
+    "character": "(",
+    "bytes": [
+      40
+    ]
+  },
+  "44": {
+    "character": ")",
+    "bytes": [
+      41
+    ]
+  },
+  "45": {
+    "character": "*",
+    "bytes": [
+      42
+    ]
+  },
+  "46": {
+    "character": "+",
+    "bytes": [
+      43
+    ]
+  },
+  "47": {
+    "character": ",",
+    "bytes": [
+      44
+    ]
+  },
+  "48": {
+    "character": "-",
+    "bytes": [
+      45
+    ]
+  },
+  "49": {
+    "character": ".",
+    "bytes": [
+      46
+    ]
+  },
+  "50": {
+    "character": "/",
+    "bytes": [
+      47
+    ]
+  },
+  "51": {
+    "character": "0",
+    "bytes": [
+      48
+    ]
+  },
+  "52": {
+    "character": "1",
+    "bytes": [
+      49
+    ]
+  },
+  "53": {
+    "character": "2",
+    "bytes": [
+      50
+    ]
+  },
+  "54": {
+    "character": "3",
+    "bytes": [
+      51
+    ]
+  },
+  "55": {
+    "character": "4",
+    "bytes": [
+      52
+    ]
+  },
+  "56": {
+    "character": "5",
+    "bytes": [
+      53
+    ]
+  },
+  "57": {
+    "character": "6",
+    "bytes": [
+      54
+    ]
+  },
+  "58": {
+    "character": "7",
+    "bytes": [
+      55
+    ]
+  },
+  "59": {
+    "character": "8",
+    "bytes": [
+      56
+    ]
+  },
+  "60": {
+    "character": "9",
+    "bytes": [
+      57
+    ]
+  },
+  "61": {
+    "character": ":",
+    "bytes": [
+      58
+    ]
+  },
+  "62": {
+    "character": ";",
+    "bytes": [
+      59
+    ]
+  },
+  "63": {
+    "character": "<",
+    "bytes": [
+      60
+    ]
+  },
+  "64": {
+    "character": "=",
+    "bytes": [
+      61
+    ]
+  },
+  "65": {
+    "character": ">",
+    "bytes": [
+      62
+    ]
+  },
+  "66": {
+    "character": "?",
+    "bytes": [
+      63
+    ]
+  },
+  "67": {
+    "character": "@",
+    "bytes": [
+      64
+    ]
+  },
+  "68": {
+    "character": "A",
+    "bytes": [
+      65
+    ]
+  },
+  "69": {
+    "character": "B",
+    "bytes": [
+      66
+    ]
+  },
+  "70": {
+    "character": "C",
+    "bytes": [
+      67
+    ]
+  },
+  "71": {
+    "character": "D",
+    "bytes": [
+      68
+    ]
+  },
+  "72": {
+    "character": "E",
+    "bytes": [
+      69
+    ]
+  },
+  "73": {
+    "character": "F",
+    "bytes": [
+      70
+    ]
+  },
+  "74": {
+    "character": "G",
+    "bytes": [
+      71
+    ]
+  },
+  "75": {
+    "character": "H",
+    "bytes": [
+      72
+    ]
+  },
+  "76": {
+    "character": "I",
+    "bytes": [
+      73
+    ]
+  },
+  "77": {
+    "character": "J",
+    "bytes": [
+      74
+    ]
+  },
+  "78": {
+    "character": "K",
+    "bytes": [
+      75
+    ]
+  },
+  "79": {
+    "character": "L",
+    "bytes": [
+      76
+    ]
+  },
+  "80": {
+    "character": "M",
+    "bytes": [
+      77
+    ]
+  },
+  "81": {
+    "character": "N",
+    "bytes": [
+      78
+    ]
+  },
+  "82": {
+    "character": "O",
+    "bytes": [
+      79
+    ]
+  },
+  "83": {
+    "character": "P",
+    "bytes": [
+      80
+    ]
+  },
+  "84": {
+    "character": "Q",
+    "bytes": [
+      81
+    ]
+  },
+  "85": {
+    "character": "R",
+    "bytes": [
+      82
+    ]
+  },
+  "86": {
+    "character": "S",
+    "bytes": [
+      83
+    ]
+  },
+  "87": {
+    "character": "T",
+    "bytes": [
+      84
+    ]
+  },
+  "88": {
+    "character": "U",
+    "bytes": [
+      85
+    ]
+  },
+  "89": {
+    "character": "V",
+    "bytes": [
+      86
+    ]
+  },
+  "90": {
+    "character": "W",
+    "bytes": [
+      87
+    ]
+  },
+  "91": {
+    "character": "X",
+    "bytes": [
+      88
+    ]
+  },
+  "92": {
+    "character": "Y",
+    "bytes": [
+      89
+    ]
+  },
+  "93": {
+    "character": "Z",
+    "bytes": [
+      90
+    ]
+  },
+  "94": {
+    "character": "[",
+    "bytes": [
+      91
+    ]
+  },
+  "95": {
+    "character": "\\",
+    "bytes": [
+      92
+    ]
+  },
+  "96": {
+    "character": "]",
+    "bytes": [
+      93
+    ]
+  },
+  "97": {
+    "character": "^",
+    "bytes": [
+      94
+    ]
+  },
+  "98": {
+    "character": "_",
+    "bytes": [
+      95
+    ]
+  },
+  "99": {
+    "character": "`",
+    "bytes": [
+      96
+    ]
+  },
+  "100": {
+    "character": "a",
+    "bytes": [
+      97
+    ]
+  }
+}
